@@ -41,7 +41,8 @@ exports.createRegis = async (req, res) => {
   }
   
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    var salt = bcrypt.genSaltSync(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
     registration = await Regis.create({
       firstName: firstName,
       lastName: lastName,
@@ -95,7 +96,7 @@ exports.createLogin = async (req, res) => {
     };
     const authtoken = jwt.sign(data, secretKey);
     success = true;
-    res.send({ success, authtoken, user: regis });
+    res.send({ success,message: "successfully login", authtoken:authtoken, user: regis });
     // res.send({ message: "successfully login", user: user, authtoken })
   } catch (error) {
     console.error(error.message);
@@ -117,7 +118,6 @@ async function emailAlreadyExists(email) {
     // if (regis) {
     //     return res.status(200).json({ success, error: "email already exists" })
     // }
-
     return regis !== null;
   } catch (err) {
     console.error(err);
